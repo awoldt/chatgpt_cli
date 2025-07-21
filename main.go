@@ -88,6 +88,6 @@ func newRequest(chat *ConvesationState) {
 	assistantResponse := response.Output[0].Content[0].Text
 	fmt.Println(assistantResponse)
 
-	// add the assitants response to the conversation state
+	// add the assistants response to the conversation state
 	chat.Input = append(chat.Input, Input{Role: "assistant", Content: response.Output[0].Content[0].Text})
 }
