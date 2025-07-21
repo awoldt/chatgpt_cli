@@ -20,7 +20,7 @@ func init() {
 	if err != nil {
 		// see if the error is about the config file not being present
 		if errors.Is(err, os.ErrNotExist) {
-			josnData, err := json.Marshal(Config{Key: "", Model: "o4-mini"})
+			josnData, err := json.Marshal(Config{Key: "", Model: "gpt-4.1-nano"})
 			if err != nil {
 				log.Fatal("error: could not generate config.json in root")
 			}
