@@ -1,6 +1,3 @@
-# ChatGPT CLI
-
-
 Basic go program that lets you interact with ChatGPT through the terminal. Conversations are not stored anywhere. Each chat initiated will store the entire conversations context so you can get answers based on previous questions asked.
 ## Installation
 
