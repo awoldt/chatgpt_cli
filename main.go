@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
 type Content struct {
@@ -44,12 +45,13 @@ func main() {
 		if err != nil {
 			log.Fatal("error: could not get input")
 		}
-		if input == "q\n" {
+
+		input = strings.TrimSpace(input)
+		if input == "q" {
 			break
 		}
 
 		chat.Input = append(chat.Input, Input{Role: "user", Content: input})
-
 		newRequest(&chat)
 	}
 
