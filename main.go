@@ -39,7 +39,7 @@ func main() {
 	var chat ConvesationState
 
 	for {
-		fmt.Print("Query: ")
+		fmt.Print("(you): ")
 		reader := bufio.NewReader(os.Stdin)
 		input, err := reader.ReadString('\n')
 		if err != nil {
@@ -91,7 +91,7 @@ func newRequest(chat *ConvesationState) {
 		log.Fatal("error: could not parse json response")
 	}
 	assistantResponse := response.Output[0].Content[0].Text
-	fmt.Println(assistantResponse)
+	fmt.Println("(bot): " + assistantResponse)
 
 	// add the assistants response to the conversation state
 	chat.Input = append(chat.Input, Input{Role: "assistant", Content: response.Output[0].Content[0].Text})
