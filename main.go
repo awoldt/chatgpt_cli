@@ -51,10 +51,13 @@ func main() {
 			break
 		}
 
-		chat.Input = append(chat.Input, Input{Role: "user", Content: input})
-		newRequest(&chat)
+		if []rune(input)[0] == '\\' {
+			ExecuteCommand(input)
+		} else {
+			chat.Input = append(chat.Input, Input{Role: "user", Content: input})
+			newRequest(&chat)
+		}
 	}
-
 }
 
 func newRequest(chat *ConvesationState) {
