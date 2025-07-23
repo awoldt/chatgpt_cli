@@ -11,6 +11,13 @@ import (
 	"strings"
 )
 
+type SystemInstruction struct {
+	Role    string `json:"role"`
+	Content string `json:"content"`
+}
+
+var systemInstructions SystemInstruction
+
 type Content struct {
 	Text string `json:"text"`
 }
@@ -52,8 +59,13 @@ func main() {
 		}
 
 		if []rune(input)[0] == '\\' {
-			ExecuteCommand(input)
+			ExecuteCommand(input, &systemInstructions)
 		} else {
+			// if theres a system instruction set, append BEFORE the new chat
+			if systemInstructions.Role != "" {
+				chat.Input = append(chat.Input, Input(systemInstructions))
+			}
+
 			chat.Input = append(chat.Input, Input{Role: "user", Content: input})
 			newRequest(&chat)
 		}
