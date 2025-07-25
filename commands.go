@@ -1,8 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
-	"strings"
+	"os"
 )
 
 type Command struct {
@@ -25,30 +26,25 @@ func ExecuteCommand(str string, systemInstructions *SystemInstruction) {
 		return
 	}
 
-	command := strings.Split(str[1:], "=")
-	var commandKey, commandValue string
-	commandKey = command[0]
+	command := str[1:]
 
-	if !validCommand(commandKey) {
-		fmt.Println("the command \"" + commandKey + "\" is not a valid command")
-		return
-	}
-	if len(command) == 1 {
-		fmt.Println("invalid command format (missing \"=\")")
+	if !validCommand(command) {
+		fmt.Println("\"" + command + "\" is not a valid command")
 		return
 	}
 
-	commandValue = command[1]
-	if commandValue == "" {
-		fmt.Println("you must assign a value to the command")
-		return
-	}
-
-	switch commandKey {
+	switch command {
 	case "sysinstr":
 		// sets the system instruction and will be set in the conversationstate before every chat (openai docs say to do this)
 		{
-			*systemInstructions = SystemInstruction{Role: "developer", Content: commandValue}
+			reader := bufio.NewReader(os.Stdin)
+			fmt.Print("enter system instruction: ")
+			input, err := reader.ReadString('\n')
+			if err != nil {
+				fmt.Println("error: could not parse system instruction")
+				return
+			}
+			*systemInstructions = SystemInstruction{Role: "developer", Content: input}
 			fmt.Println("successfully added system instruction")
 			break
 		}
