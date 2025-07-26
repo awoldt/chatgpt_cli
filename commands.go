@@ -3,11 +3,14 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"sort"
 	"strings"
 )
+
+const conversationFileName = "conversation.json"
 
 type Command struct {
 	name        string
@@ -59,14 +62,51 @@ func ExecuteCommand(str string, systemInstructions *SystemInstruction, chat *Con
 
 	case "clear":
 		{
-			hasSystemInstruction := systemInstructions.Role != ""
-			*systemInstructions = SystemInstruction{Role: "", Content: ""}
-			*chat = ConvesationState{Model: chat.Model, Input: []Input{}}
-			if hasSystemInstruction {
-				fmt.Println("successfully cleared chat and system instruction")
+			var sb strings.Builder
+
+			// see if theres a conversations file
+			var hasSavedChat bool
+			_, err := os.ReadFile(conversationFileName)
+			if err != nil {
+				if errors.Is(err, os.ErrNotExist) {
+					hasSavedChat = false
+				}
 			} else {
-				fmt.Println("successfully cleared chat")
+				hasSavedChat = true
+				// clear conversations file
+				err = os.Remove(conversationFileName)
+				if err != nil {
+					fmt.Println("error: could not remove " + conversationFileName)
+				}
 			}
+
+			// see if theres saved system instructions
+			hasSystemInstruction := systemInstructions.Role != ""
+
+			// clear system instructions
+			*systemInstructions = SystemInstruction{Role: "", Content: ""}
+			// clear chat
+			*chat = ConvesationState{Model: chat.Model, Input: []Input{}}
+
+			fmt.Println(hasSavedChat, hasSystemInstruction)
+
+			if !hasSavedChat && !hasSystemInstruction {
+				fmt.Println("successfully cleared chat")
+				return
+			} else if hasSavedChat && hasSystemInstruction {
+				fmt.Println("successfully cleared chat, " + conversationFileName + ", and system instruction")
+				return
+			}
+
+			sb.WriteString("successfully cleared chat")
+			if hasSavedChat {
+				sb.WriteString(" and " + conversationFileName)
+			}
+			if hasSystemInstruction {
+				sb.WriteString(" and system instruction")
+			}
+
+			fmt.Println(sb.String())
 
 			break
 		}
@@ -82,7 +122,7 @@ func ExecuteCommand(str string, systemInstructions *SystemInstruction, chat *Con
 				fmt.Println("error: could not save chat")
 				return
 			}
-			os.WriteFile("conversation.json", jsonChat, 0666)
+			os.WriteFile(conversationFileName, jsonChat, 0666)
 			fmt.Println("successfully saved chat")
 			break
 		}
@@ -105,7 +145,7 @@ func ExecuteCommand(str string, systemInstructions *SystemInstruction, chat *Con
 			}
 			err = os.WriteFile("config.json", josnData, 0666)
 			if err != nil {
-				fmt.Println("error: could not save new model")
+				fmt.Println("error: could not save new model in config.json")
 				return
 			}
 
