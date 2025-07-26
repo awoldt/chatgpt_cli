@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"os"
 	"sort"
@@ -12,7 +13,7 @@ type Command struct {
 	description string
 }
 
-var allCommands = []Command{{name: "sysinstr", description: "Sets the attitude/tone of the bots responses"}, {name: "clear", description: "Clears the entire chat conversation along with the system instructions if one was set"}}
+var allCommands = []Command{{name: "sysinstr", description: "Sets the attitude/tone of the bots responses"}, {name: "clear", description: "Clears the entire chat conversation along with the system instructions if one was set"}, {name: "save", description: "Will save your current conversation with the bot to a local json file"}}
 
 func ListCommands(commands []Command) {
 	// make sure in A-Z order
@@ -66,6 +67,18 @@ func ExecuteCommand(str string, systemInstructions *SystemInstruction, chat *Con
 				fmt.Println("successfully cleared chat")
 			}
 
+			break
+		}
+
+	case "save":
+		{
+			jsonChat, err := json.Marshal(chat.Input)
+			if err != nil {
+				fmt.Println("error: could not save chat")
+				return
+			}
+			os.WriteFile("conversation.json", jsonChat, 0666)
+			fmt.Println("successfully saved chat")
 			break
 		}
 	}

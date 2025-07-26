@@ -10,5 +10,7 @@ You can enter custom commands to customize your experience while chatting with t
 
 - **\clear** - Will clear the entire chat conversation you've had with the bot. This will also clear any custom system instructions if you had set one.
 
-- **\sysinstr** - Set a system instruction for the bot during your conversation. A system instruction is a rule or guideline given to a chatbot that tells it how to behave or respond. Each system instruction given to the bot will persist during the entire conversation.
+- **\save** - Saves your current conversation with the bot in a json file.
+
+- **\sysinstr** - Set a system instruction for the bot during your conversation. A system instruction is a rule or guideline given to a chatbot that tells it how to behave or respond. Each system instruction given to the bot will persist during the entire conversation unless cleared.
 
