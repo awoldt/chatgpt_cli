@@ -10,9 +10,13 @@ You can enter custom commands to customize your experience while chatting with t
 
 - **\clear** - Will clear the entire chat conversation you've had with the bot. This will also clear any custom system instructions if you had set one.
 
-- **\model** - Change the chatGPT model that is used during chat. Defaults to gpt-4.1-nano when running app for the first time.
+- **\history** - Shows entire chat history in the terminal
 
-- **\save** - Saves your current conversation with the bot in a json file.
+- **\model** - Change the chatGPT model that is used during chat. Defaults to gpt-4.1-nano when running the program for the first time.
+
+- **\q** - Quits the program
+
+- **\save** - Saves your current conversation with the bot in a json file
 
 - **\sysinstr** - Set a system instruction for the bot during your conversation. A system instruction is a rule or guideline given to a chatbot that tells it how to behave or respond. Each system instruction given to the bot will persist during the entire conversation unless cleared.
 

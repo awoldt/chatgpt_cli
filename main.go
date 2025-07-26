@@ -54,8 +54,8 @@ func main() {
 		}
 
 		input = strings.TrimSpace(input)
-		if input == "q" {
-			break
+		if input == "" {
+			continue
 		}
 
 		if []rune(input)[0] == '\\' {

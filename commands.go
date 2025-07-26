@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -17,7 +18,7 @@ type Command struct {
 	description string
 }
 
-var allCommands = []Command{{name: "sysinstr", description: "Sets the attitude/tone of the bots responses"}, {name: "clear", description: "Clears the entire chat conversation along with the system instructions if one was set"}, {name: "save", description: "Will save your current conversation with the bot to a local json file"}, {name: "model", description: "Change the chatGPT model that is used in chat. Visit https://platform.openai.com/docs/models for all available models."}}
+var allCommands = []Command{{name: "history", description: "Displays entire conversation in the terminal"}, {name: "q", description: "Quits the app"}, {name: "sysinstr", description: "Sets the attitude/tone of the bots responses"}, {name: "clear", description: "Clears the entire chat conversation along with the system instructions if one was set"}, {name: "save", description: "Will save your current conversation with the bot to a local json file"}, {name: "model", description: "Change the chatGPT model that is used in chat. Visit https://platform.openai.com/docs/models for all available models."}}
 
 func ListCommands(commands []Command) {
 	// make sure in A-Z order
@@ -29,6 +30,7 @@ func ListCommands(commands []Command) {
 	for _, v := range commands {
 		fmt.Println("\t" + v.name + " - " + v.description)
 	}
+	fmt.Print("\n")
 }
 
 func ExecuteCommand(str string, systemInstructions *SystemInstruction, chat *ConvesationState, config *Config) {
@@ -87,8 +89,6 @@ func ExecuteCommand(str string, systemInstructions *SystemInstruction, chat *Con
 			*systemInstructions = SystemInstruction{Role: "", Content: ""}
 			// clear chat
 			*chat = ConvesationState{Model: chat.Model, Input: []Input{}}
-
-			fmt.Println(hasSavedChat, hasSystemInstruction)
 
 			if !hasSavedChat && !hasSystemInstruction {
 				fmt.Println("successfully cleared chat")
@@ -152,6 +152,32 @@ func ExecuteCommand(str string, systemInstructions *SystemInstruction, chat *Con
 			// update the model currently being used by program
 			*config = Config{Model: strings.TrimSpace(input), Key: config.Key}
 			fmt.Println("successfully chagned model to " + input)
+			break
+		}
+
+	case "q":
+		{
+			os.Exit(0)
+		}
+
+	case "history":
+		{
+			if len(chat.Input) == 0 {
+				fmt.Println("You do not have any chats yet")
+				return
+			}
+			fmt.Print("\n")
+			fmt.Println("History (" + strconv.Itoa(len(chat.Input)) + " chats)")
+			fmt.Println("-----------")
+			for _, v := range chat.Input {
+				if v.Role == "user" {
+					fmt.Println("you - " + v.Content)
+				}
+				if v.Role == "assistant" {
+					fmt.Println("bot - " + v.Content)
+				}
+
+			}
 			break
 		}
 	}
