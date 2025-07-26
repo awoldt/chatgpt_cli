@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"sort"
 )
 
 type Command struct {
@@ -11,18 +12,23 @@ type Command struct {
 	description string
 }
 
-var allCommands = []Command{{name: "sysinstr", description: "Sets the attitude/tone of the bots responses"}}
+var allCommands = []Command{{name: "sysinstr", description: "Sets the attitude/tone of the bots responses"}, {name: "clear", description: "Clears the entire chat conversation along with the system instructions if one was set"}}
 
-func ListCommands() {
+func ListCommands(commands []Command) {
+	// make sure in A-Z order
+	sort.Slice(commands, func(i, j int) bool {
+		return commands[i].name < commands[j].name
+	})
+
 	fmt.Println("--- Commands --- ")
-	for _, v := range allCommands {
+	for _, v := range commands {
 		fmt.Println("\t" + v.name + " - " + v.description)
 	}
 }
 
-func ExecuteCommand(str string, systemInstructions *SystemInstruction) {
+func ExecuteCommand(str string, systemInstructions *SystemInstruction, chat *ConvesationState) {
 	if str == "\\" {
-		ListCommands()
+		ListCommands(allCommands)
 		return
 	}
 
@@ -46,6 +52,20 @@ func ExecuteCommand(str string, systemInstructions *SystemInstruction) {
 			}
 			*systemInstructions = SystemInstruction{Role: "developer", Content: input}
 			fmt.Println("successfully added system instruction")
+			break
+		}
+
+	case "clear":
+		{
+			hasSystemInstruction := systemInstructions.Role != ""
+			*systemInstructions = SystemInstruction{Role: "", Content: ""}
+			*chat = ConvesationState{Model: chat.Model, Input: []Input{}}
+			if hasSystemInstruction {
+				fmt.Println("successfully cleared chat and system instruction")
+			} else {
+				fmt.Println("successfully cleared chat")
+			}
+
 			break
 		}
 	}
