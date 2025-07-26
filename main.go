@@ -59,7 +59,7 @@ func main() {
 		}
 
 		if []rune(input)[0] == '\\' {
-			ExecuteCommand(input, &systemInstructions, &chat)
+			ExecuteCommand(input, &systemInstructions, &chat, &UserConfig)
 		} else {
 			// if theres a system instruction set, append BEFORE the new chat
 			if systemInstructions.Role != "" {

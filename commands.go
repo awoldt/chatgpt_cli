@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strings"
 )
 
 type Command struct {
@@ -13,7 +14,7 @@ type Command struct {
 	description string
 }
 
-var allCommands = []Command{{name: "sysinstr", description: "Sets the attitude/tone of the bots responses"}, {name: "clear", description: "Clears the entire chat conversation along with the system instructions if one was set"}, {name: "save", description: "Will save your current conversation with the bot to a local json file"}}
+var allCommands = []Command{{name: "sysinstr", description: "Sets the attitude/tone of the bots responses"}, {name: "clear", description: "Clears the entire chat conversation along with the system instructions if one was set"}, {name: "save", description: "Will save your current conversation with the bot to a local json file"}, {name: "model", description: "Change the chatGPT model that is used in chat. Visit https://platform.openai.com/docs/models for all available models."}}
 
 func ListCommands(commands []Command) {
 	// make sure in A-Z order
@@ -27,7 +28,7 @@ func ListCommands(commands []Command) {
 	}
 }
 
-func ExecuteCommand(str string, systemInstructions *SystemInstruction, chat *ConvesationState) {
+func ExecuteCommand(str string, systemInstructions *SystemInstruction, chat *ConvesationState, config *Config) {
 	if str == "\\" {
 		ListCommands(allCommands)
 		return
@@ -72,6 +73,10 @@ func ExecuteCommand(str string, systemInstructions *SystemInstruction, chat *Con
 
 	case "save":
 		{
+			if len(chat.Input) == 0 {
+				fmt.Println("there is no chat history to save")
+				return
+			}
 			jsonChat, err := json.Marshal(chat.Input)
 			if err != nil {
 				fmt.Println("error: could not save chat")
@@ -79,6 +84,34 @@ func ExecuteCommand(str string, systemInstructions *SystemInstruction, chat *Con
 			}
 			os.WriteFile("conversation.json", jsonChat, 0666)
 			fmt.Println("successfully saved chat")
+			break
+		}
+
+	case "model":
+		{
+			reader := bufio.NewReader(os.Stdin)
+			fmt.Print("enter model: ")
+			input, err := reader.ReadString('\n')
+			if err != nil {
+				fmt.Println("error: could not parse model text")
+				return
+			}
+
+			// save new config.json
+			josnData, err := json.Marshal(Config{Key: config.Key, Model: strings.TrimSpace(input)})
+			if err != nil {
+				fmt.Println("error: could not update model")
+				return
+			}
+			err = os.WriteFile("config.json", josnData, 0666)
+			if err != nil {
+				fmt.Println("error: could not save new model")
+				return
+			}
+
+			// update the model currently being used by program
+			*config = Config{Model: strings.TrimSpace(input), Key: config.Key}
+			fmt.Println("successfully chagned model to " + input)
 			break
 		}
 	}
