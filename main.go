@@ -23,7 +23,7 @@ type Content struct {
 }
 
 type Output struct {
-	Content []Content `json:"content"`
+	Content *[]Content `json:"content"` // possible undefined in some resposnes
 }
 
 type OpenAiResponse struct {
@@ -102,9 +102,17 @@ func newRequest(chat *ConvesationState) {
 		fmt.Println(err.Error())
 		log.Fatal("error: could not parse json response")
 	}
-	assistantResponse := response.Output[0].Content[0].Text
+
+	var assistantResponse string
+	for i := 0; i < len(response.Output); i++ {
+		if response.Output[i].Content != nil {
+			assistantResponse = (*response.Output[i].Content)[0].Text
+			break
+		}
+	}
+
 	fmt.Println("(bot): " + assistantResponse)
 
 	// add the assistants response to the conversation state
-	chat.Input = append(chat.Input, Input{Role: "assistant", Content: response.Output[0].Content[0].Text})
+	chat.Input = append(chat.Input, Input{Role: "assistant", Content: assistantResponse})
 }

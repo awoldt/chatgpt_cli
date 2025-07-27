@@ -176,8 +176,8 @@ func ExecuteCommand(str string, systemInstructions *SystemInstruction, chat *Con
 				if v.Role == "assistant" {
 					fmt.Println("bot - " + v.Content)
 				}
-
 			}
+			fmt.Print("\n")
 			break
 		}
 	}
