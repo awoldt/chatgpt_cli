@@ -46,7 +46,10 @@ func ExecuteCommand(str string, systemInstructions *SystemInstruction, chat *Con
 		return
 	}
 
+	fmt.Print("\n")
+
 	switch command {
+
 	case "sysinstr":
 		// sets the system instruction and will be set in the conversationstate before every chat (openai docs say to do this)
 		{
@@ -129,11 +132,17 @@ func ExecuteCommand(str string, systemInstructions *SystemInstruction, chat *Con
 
 	case "model":
 		{
+			fmt.Println("Current model: " + config.Model)
 			reader := bufio.NewReader(os.Stdin)
 			fmt.Print("enter model: ")
 			input, err := reader.ReadString('\n')
 			if err != nil {
 				fmt.Println("error: could not parse model text")
+				return
+			}
+
+			if input == "\n" {
+				fmt.Println("Invalid model")
 				return
 			}
 
@@ -166,7 +175,6 @@ func ExecuteCommand(str string, systemInstructions *SystemInstruction, chat *Con
 				fmt.Println("You do not have any chats yet")
 				return
 			}
-			fmt.Print("\n")
 			fmt.Println("History (" + strconv.Itoa(len(chat.Input)) + " chats)")
 			fmt.Println("-----------")
 			for _, v := range chat.Input {
@@ -177,10 +185,14 @@ func ExecuteCommand(str string, systemInstructions *SystemInstruction, chat *Con
 					fmt.Println("bot - " + v.Content)
 				}
 			}
-			fmt.Print("\n")
+
+			fmt.Println("-----------")
+
 			break
 		}
 	}
+
+	fmt.Print("\n")
 }
 
 func validCommand(command string) bool {
