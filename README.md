@@ -1,6 +1,6 @@
 Basic go program that lets you interact with ChatGPT through the terminal. Each chat initiated will store the entire conversations context so you can get answers based on previous questions asked.
 
-## Installation
+## How to run
 
 Simply run the main.go file and a "config.json" will be generated in the root of your project. Add your OpenAI API key to this config and start using!
 
